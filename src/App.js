@@ -18,10 +18,15 @@ function App() {
 
   // componentDidMount - executa 1x
   useEffect(() => {
-    document.querySelector('h1').addEventListener('click', eventFn);
+    document.querySelector('h1')?.addEventListener('click', eventFn);
+
+    // componentWillUmount => limpeza
+    return () => {
+      document.querySelector('h1')?.removeEventListener('click', eventFn);
+    };
   }, []);
 
-  // com dependencia - executa toda vez que a dependência mudar
+  // com dependência - executa toda vez que a dependência mudar
   useEffect(() => {
     console.log(`C1: ${counter} C2: ${counter2}`);
     // setCounter(counter + 1); // Loop infinito
