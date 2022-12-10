@@ -1,55 +1,76 @@
-import { useReducer } from 'react';
 import './App.css';
 
-const globalState = {
-  title: 'O título do contexto',
+import P from 'prop-types';
+import { createContext, useContext, useReducer, useRef } from 'react';
+
+// actions.js
+export const actions = {
+  CHANGE_TITLE: 'CHANGE_TITLE',
+};
+
+// data.js
+export const globalState = {
+  title: 'Hello World !!!',
   body: 'O paragrafo',
   counter: 0,
 };
 
-const reducer = (state, action) => {
+// reducer.js
+export const reducer = (state, action) => {
   switch (action.type) {
-    case 'muda': {
-      console.log('Chamou muda com', action.payload);
+    case actions.CHANGE_TITLE: {
+      console.log('Mudar Titulo');
       return { ...state, title: action.payload };
-    }
-    case 'inverter': {
-      const { title } = state;
-      console.log('Chamou inverter');
-      return { ...state, title: title.split('').reverse().join('') };
     }
 
     default:
       break;
   }
-
-  console.log('Nenhuma Action encontrada');
   return { ...state };
 };
 
-function App() {
+// AppContext.jsx
+export const Context = createContext();
+export const AppContext = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, globalState);
-  const { counter, title, body } = state;
+
+  const changeTitle = (payload) => {
+    dispatch({ type: actions.CHANGE_TITLE, payload });
+  };
 
   return (
-    <div>
-      <h1>
-        {title} {counter}
+    <Context.Provider value={{ state, changeTitle }}>
+      {children}
+    </Context.Provider>
+  );
+};
+
+//H1/index.jsx
+export const H1 = () => {
+  const context = useContext(Context);
+  const inputRef = useRef();
+
+  return (
+    <>
+      <h1 onClick={() => context.changeTitle(inputRef.current.value)}>
+        {context.state.title}
       </h1>
-      <button
-        onClick={() =>
-          dispatch({
-            type: 'muda',
-            payload: new Date().toLocaleString('pt-BR'),
-          })
-        }
-      >
-        Click
-      </button>
-      <button onClick={() => dispatch({ type: 'inverter' })}>Inverte</button>
-      <button onClick={() => dispatch({ type: 'invalido' })}>Sem action</button>
-    </div>
+      <input type="text" ref={inputRef} />
+    </>
+  );
+};
+
+// App.jsx
+function App() {
+  return (
+    <AppContext>
+      <H1 />
+    </AppContext>
   );
 }
+
+AppContext.propTypes = {
+  children: P.node,
+};
 
 export default App;

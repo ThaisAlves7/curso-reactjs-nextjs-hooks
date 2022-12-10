@@ -55,3 +55,8 @@ button {
   font-size: 1.2em;
   font-weight: bold;
 }
+
+input {
+  padding: 10px 40px;
+  font-size: 1.2em;
+}
